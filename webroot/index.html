@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="gb2312"/>
+    <meta name="applicable-device" content="pc">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+
+    <title>智能合约交易测试</title>
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: #fff;
+            position: relative;
+            font-family: "Arial Unicode MS";
+            box-sizing: border-box;
+        }
+
+        #container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -150px;
+            margin-left: -240px;
+        }
+
+        a img {
+            border: none;
+            display: block;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+            padding: 1em 0 0;
+            box-sizing: border-box;
+            color: #8CC84C;
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery.js"></script>
+
+</head>
+<body>
+<h1>智能合约交易测试</h1>
+<div id="container" style="top:200px">
+    <h3>提交信息</h3>
+    <div>
+        <text>账户地址:</text>
+        <input type="text" id="account_hash" value="0x25e1f17a03ec9442b9438a1e7fbab9631fcd0e99"></input></br>
+        <text>Name:</text>
+        <input type="text" id="user_name" value="张三"></input></br>
+        <text>手机号:</text>
+        <input type="text" id="user_mobile" value="1360"></input></br>
+        <text>身份证:</text>
+        <input type="text" id="user_card" value=""></input></br>
+        <text>车牌号:</text>
+        <input type="text" id="plate_number" value=""></input></br>
+        <button id="btnSubmint" type="button" onClick="btnPutInfo()">提交信息</button>
+        <text id="divshow"></text>
+        </br>
+    </div>
+
+    <h3>信息查询</h3>
+    <div>
+        <text>查询者账户:</text>
+        <input type="text" id="account_hash2" value="0x25e1f17a03ec9442b9438a1e7fbab9631fcd0e99"></input></br>
+        <text>被人手机:</text>
+        <input type="text" id="user_mobile2" value="136666"></input></br>
+
+        <button id="btnquery" type="button" onClick="btnQueryInfo()">查询信息</button>
+        </br></br>
+        <text id="divshow2"></text>
+    </div>
+
+
+    <h3>查询代币</h3>
+    <div>
+        <text>账户地址:</text>
+        <input type="text" id="account_hash3" value="0x25e1f17a03ec9442b9438a1e7fbab9631fcd0e99"></input>
+        <text>类型:</text>
+        <select id="balance_type" name="">
+            <option value="0" selected="selected">eth</option>
+            <option value="1">代币</option>
+            <option value="2">锁定 代币</option>
+            <option value="-1">所有资产</option>
+        </select>
+        <button id="btnget" type="button" onClick="getBalance()">查询代币</button>
+        <text id="divshow3"></text>
+    </div>
+
+    <h3>增发代币</h3>
+    <div>
+        <label>增发地址: </label>
+        <input type="text" id="add_address" value="0x25e1f17a03ec9442b9438a1e7fbab9631fcd0e99" style="width:300px"/>
+        <br/>
+        <label>增发数量: </label>
+        <input type="text" id="add_num" style="width:300px"/>
+        <button id="btnadd" type="button" onClick="addTotalSupply()">增发</button>
+    </div>
+
+    <h3>销毁合约</h3>
+    <div>
+        <button id="destroy" type="button" onClick="destroyCon()">销毁</button>
+    </div>
+
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+    function btnPutInfo() {
+        debugger;
+        var url = "action.do?actname=putinfo&account_hash=" + $("#account_hash").val() + "&user_name=" + encodeURIComponent($("#user_name").val());//application/json
+        var option = {
+            "account_hash": document.getElementById('account_hash').value,
+            "user_name": encodeURIComponent(document.getElementById('user_name').value),
+            "user_mobile": $("#user_mobile").val(),
+            "user_card": $("#user_card").val(),
+            "plate_number": encodeURIComponent($("#plate_number").val())
+        };
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: option,
+            dataType: "html",
+            success: function (vMsg) {
+                debugger;
+                var msg;
+                console.log(vMsg);
+                if (vMsg.length > 1) {
+                    msg = JSON.parse(vMsg);
+                    alert("提交成功 " + msg.msg);
+                    document.getElementById('divshow').innerHTML = "<a  href='http://localhost:8080/ipfs/" + msg.data + "' target='_blank'>" + msg.data + "</a>"
+                } else {
+                    alert("发生意外错误！");
+                }
+
+
+            }
+        });
+    }
+
+    function btnQueryInfo() {
+        var url = "action.do?actname=queryinfo&";//application/json
+        var option = {
+            "account_hash": document.getElementById('account_hash').value,
+            "user_mobile": document.getElementById('user_mobile2').value
+        };
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: option,
+            dataType: "html",
+            success: function (vMsg) {
+                debugger;
+                var msg;
+                if (vMsg.length > 1) {
+                    msg = JSON.parse(vMsg);
+                    alert("查询成功");
+                    document.getElementById('divshow2').innerHTML = msg.data;
+                } else {
+                    alert("发生意外错误！");
+                }
+
+            }
+        });
+    }
+
+    function getBalance() {
+        debugger;
+        var url = "action.do?actname=getbalance";//application/json
+        var type = $("#balance_type option:selected").val();  //获取选中的项
+        var option = {
+            "account_hash": document.getElementById('account_hash3').value,
+            "type": type
+        };
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: option,
+            dataType: "html",
+            success: function (vMsg) {
+                debugger;
+                var msg;
+                if (vMsg.length > 1) {
+                    msg = JSON.parse(vMsg);
+                    alert("查询成功:" + msg.data);
+                    document.getElementById('divshow3').innerHTML = msg.data;
+                } else {
+                    alert("发生意外错误！");
+                }
+
+            }
+        });
+
+    }
+
+    function addTotalSupply() {
+        var add_address = document.getElementById('add_address').value;
+        var add_num = document.getElementById('add_num').value;
+        var option = {
+            "add_address": add_address,
+            "add_num": add_num
+        };
+        var url = "action.do?actname=addTotalSupply";
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: "html",
+            data: option,
+            success: function (data) {//请求成功
+
+            },
+            error: function (response, textStatus, errorThrown) {//请求失败
+                try {
+                } catch (e) {
+                }
+            }
+        });
+    }
+
+
+    function destroyCon() {
+
+        var url = "action.do?actname=destory";
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function (data) {//请求成功
+
+            },
+            error: function (response, textStatus, errorThrown) {//请求失败
+                try {
+                } catch (e) {
+                }
+            }
+        });
+    }
+</script>

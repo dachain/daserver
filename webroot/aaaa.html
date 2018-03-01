@@ -1,0 +1,47 @@
+<html>
+<head>
+    <title>文字加密及解密</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body>
+<p><input id="text1" name="textfield" value="源码爱好者"></p>
+<input type="button" name="Button1" value="文字加密" onClick="Encrypt(text1.value)">
+<input type="button" name="Button2" value="文字解密" onClick="unEncrypt(text1.value)">
+<script language="JavaScript">
+    var p=0;
+    function Encrypt(Text) {
+        p=p+1;
+        output = new String;
+        alterText = new Array();
+        varCost = new Array();
+        TextSize = Text.length;
+        for (i = 0; i < TextSize; i++) {
+            idea = Math.round(Math.random() * 111) + 77;
+            alterText[i] = Text.charCodeAt(i) + idea;
+            varCost[i] = idea;
+        }
+        for (i = 0; i < TextSize; i++) {
+            output += String.fromCharCode(alterText[i], varCost[i]);
+        }
+        text1.value=output;
+    }
+    function unEncrypt(Text) {
+        if (p>0){
+            p=p-1;
+            output = new String;
+            alterText1 = new Array();
+            varCost1 = new Array();
+            TextSize = Text.length;
+            for (i = 0; i < TextSize; i++) {
+                alterText[i] = Text.charCodeAt(i);
+                varCost[i] = Text.charCodeAt(i + 1);
+            }
+            for (i = 0; i < TextSize; i = i+2) {
+                output += String.fromCharCode(alterText[i] - varCost[i]);
+            }
+            text1.value=output;
+        }
+    }
+</script>
+</body>
+</html>
