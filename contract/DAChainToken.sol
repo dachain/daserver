@@ -5,8 +5,8 @@ contract DMToken {
     address public owner;//合约创建者
     address public coreSender;//中心分发代币者
     string public constant name = "Dumai Chain Token";
-    string public constant symbol = "DAChain";
-    uint256 public constant decimals = 4;
+    string public constant symbol = "DuCT";
+    uint256 public constant decimals = 8;
     uint256 public  totalSupply = 15 * 100 * 1000 * 1000 * 10 ** decimals;
 
     // 提交数据分配代币流水
